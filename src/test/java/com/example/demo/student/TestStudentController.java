@@ -6,6 +6,7 @@ import com.example.demo.common.base.OrderBy;
 import com.example.demo.entity.Student;
 import com.example.demo.enums.OperateEnum;
 import com.example.demo.enums.OrderTypeEnum;
+import com.example.demo.utils.XmWrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /*
@@ -94,19 +96,27 @@ public class TestStudentController {
 
     @Test
     public void contextLoads() throws Exception {
-        Student student = new Student();
-        student.setConditions(new ArrayList<>());
-        student.setOrders(new ArrayList<>());
 
-        student.getConditions().add(new Condition(Student::getName, OperateEnum.LIKE_LEFT, "张"));
-        student.getConditions().add(new Condition("age", "gt", 1));
-        student.getConditions().add(new Condition("age", "lt", 100));
-        student.getConditions().add(new Condition("age", "in", 10, 20));
-        student.getConditions().add(new Condition("age", OperateEnum.IS_NOT_NULL));
-        student.getOrders().add(new OrderBy("age", "desc"));
-        student.getOrders().add(new OrderBy(Student::getName, "desc"));
-        student.getOrders().add(new OrderBy(Student::getId, OrderTypeEnum.ASC));
+        final List<Condition> conditions = XmWrappers.buildCondition()
+                .field(Student::getName, OperateEnum.LIKE_LEFT, "张")
+                .field("age", "gt", 1)
+                .field("age", "lt", 100)
+                .field("age", "in", 10, 20)
+                .field("age", OperateEnum.IS_NOT_NULL)
+                .build();
+
+        final List<OrderBy> orders = XmWrappers.buildOrderBy()
+                .add("age", "desc")
+                .add(Student::getName, "desc")
+                .add(Student::getId, OrderTypeEnum.ASC)
+                .build();
+
+        Student student = new Student();
+        student.setConditions(conditions);
+        student.setOrders(orders);
+
         String strJson = JSONUtil.toJsonStr(student);
+
         /*
             ==>  Preparing: SELECT id,name,age FROM student WHERE (name LIKE ? AND age > ? AND age < ? AND age IN (?,?)) ORDER BY age DESC,name DESC,id ASC
             ==> Parameters: %张(String), 1(Integer), 100(Integer), 10(Integer), 20(Integer)

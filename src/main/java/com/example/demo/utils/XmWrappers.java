@@ -8,13 +8,16 @@ import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.example.demo.common.base.BaseEntity;
 import com.example.demo.common.base.Condition;
 import com.example.demo.common.base.OrderBy;
 import com.example.demo.enums.OperateEnum;
 import com.example.demo.enums.OrderTypeEnum;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Wrapper 条件构造
@@ -22,6 +25,29 @@ import java.util.List;
  * @author Caratacus
  */
 public final class XmWrappers {
+
+    public static Map<String, Object> flat(Map<String, String[]> map) {
+        Map<String, Object> newMap = new HashMap<>();
+
+        for (Map.Entry<String, String[]> entry : map.entrySet()) {
+            String[] values = entry.getValue();
+            if (values.length > 0) {
+                newMap.put(entry.getKey(), values[0]);
+            }
+        }
+        return newMap;
+    }
+
+    public static <T> QueryWrapper<T> search(BaseEntity baseEntity) {
+        if (baseEntity == null) {
+            throw new IllegalArgumentException("baseEntity 不能为空");
+        }
+        final List<Condition> conditions = baseEntity.getConditions();
+        final List<OrderBy> orders = baseEntity.getOrders();
+        final Class<T> entityClass = (Class<T>) baseEntity.getClass();
+
+        return search(entityClass, conditions, orders);
+    }
 
     public static <T> QueryWrapper<T> search(Class<T> entityClass, List<Condition> conditions) {
         return search(entityClass, conditions, null);
@@ -139,6 +165,13 @@ public final class XmWrappers {
         }
 
         public <T> InnerCondition field(SFunction<T, ?> fn, OperateEnum operateEnum, Object... values) {
+            conditions.add(new Condition(fn, operateEnum, values));
+            return this;
+        }
+
+
+        public <T> InnerCondition field(SFunction<T, ?> fn, String operateStr, Object... values) {
+            final OperateEnum operateEnum = OperateEnum.of(operateStr);
             conditions.add(new Condition(fn, operateEnum, values));
             return this;
         }
@@ -317,13 +350,12 @@ public final class XmWrappers {
             return this;
         }
 
-        public <T> InnerOrderBy asc(SFunction<T, ?> fn) {
-            orderBys.add(new OrderBy(fn, OrderTypeEnum.ASC));
-            return this;
-        }
-
-        public <T> InnerOrderBy desc(SFunction<T, ?> fn) {
-            orderBys.add(new OrderBy(fn, OrderTypeEnum.DESC));
+        public <T> InnerOrderBy add(SFunction<T, ?> fn, String orderTypeStr) {
+            OrderTypeEnum orderTypeEnum = OrderTypeEnum.ASC;
+            if (StrUtil.equalsIgnoreCase(OrderTypeEnum.DESC.name(), orderTypeStr)) {
+                orderTypeEnum =  OrderTypeEnum.DESC;
+            }
+            orderBys.add(new OrderBy(fn, orderTypeEnum));
             return this;
         }
 
@@ -341,8 +373,18 @@ public final class XmWrappers {
             return this;
         }
 
+        public <T> InnerOrderBy asc(SFunction<T, ?> fn) {
+            orderBys.add(new OrderBy(fn, OrderTypeEnum.ASC));
+            return this;
+        }
+
         public <T> InnerOrderBy asc(String fieldName) {
             orderBys.add(new OrderBy(fieldName, OrderTypeEnum.ASC));
+            return this;
+        }
+
+        public <T> InnerOrderBy desc(SFunction<T, ?> fn) {
+            orderBys.add(new OrderBy(fn, OrderTypeEnum.DESC));
             return this;
         }
 
