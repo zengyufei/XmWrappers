@@ -1,2 +1,2 @@
-![APIFOX](https://github.com/zengyufei/XmWrappers/raw/main/apifox.png)
+![APIFOX](https://github.com/zengyufei/XmWrappers/blob/main/apifox.jpg)
 ![houduan](https://github.com/zengyufei/XmWrappers/blob/main/houduan.png)
