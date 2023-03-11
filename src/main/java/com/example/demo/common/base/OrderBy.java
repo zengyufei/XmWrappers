@@ -14,6 +14,8 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
 @Data
 @Accessors(chain = true)
 public class OrderBy {
+
+    private Integer index;
     private String field;
     @JsonDeserialize(converter = OrderTypeEnumConverter.class)
     private OrderTypeEnum orderBy;
@@ -30,7 +32,7 @@ public class OrderBy {
         }
     }
 
-    public <T> OrderBy(SFunction<T, ?> fn,String orderByStr) {
+    public <T> OrderBy(SFunction<T, ?> fn, String orderByStr) {
         LambdaMeta meta = LambdaUtils.extract(fn);
         this.field = PropertyNamer.methodToProperty(meta.getImplMethodName());
         if (StrUtil.isBlankOrUndefined(orderByStr)) {
@@ -40,7 +42,7 @@ public class OrderBy {
         }
     }
 
-    public <T> OrderBy(String field, OrderTypeEnum orderBy) {
+    public OrderBy(String field, OrderTypeEnum orderBy) {
         this.field = field;
         this.orderBy = orderBy;
         if (this.orderBy == null) {
@@ -48,7 +50,7 @@ public class OrderBy {
         }
     }
 
-    public <T> OrderBy(String field, String orderByStr) {
+    public OrderBy(String field, String orderByStr) {
         this.field = field;
         if (StrUtil.isBlankOrUndefined(orderByStr)) {
             this.orderBy = OrderTypeEnum.ASC;
@@ -63,8 +65,60 @@ public class OrderBy {
         this.orderBy = OrderTypeEnum.ASC;
     }
 
-    public <T> OrderBy(String field) {
+    public OrderBy(String field) {
         this.field = field;
         this.orderBy = OrderTypeEnum.ASC;
     }
+
+    public OrderBy(Integer index, String field) {
+        this.index = index;
+        this.field = field;
+    }
+
+    public <T> OrderBy(Integer index, SFunction<T, ?> fn) {
+        this.index = index;
+        LambdaMeta meta = LambdaUtils.extract(fn);
+        this.field = PropertyNamer.methodToProperty(meta.getImplMethodName());
+    }
+
+    public <T> OrderBy(Integer index, SFunction<T, ?> fn, OrderTypeEnum orderBy) {
+        this.index = index;
+        LambdaMeta meta = LambdaUtils.extract(fn);
+        this.field = PropertyNamer.methodToProperty(meta.getImplMethodName());
+        this.orderBy = orderBy;
+        if (this.orderBy == null) {
+            this.orderBy = OrderTypeEnum.ASC;
+        }
+    }
+
+    public OrderBy(Integer index, String field, OrderTypeEnum orderBy) {
+        this.index = index;
+        this.field = field;
+        this.orderBy = orderBy;
+        if (this.orderBy == null) {
+            this.orderBy = OrderTypeEnum.ASC;
+        }
+    }
+
+    public <T> OrderBy(Integer index, SFunction<T, ?> fn, String orderByStr) {
+        this.index = index;
+        LambdaMeta meta = LambdaUtils.extract(fn);
+        this.field = PropertyNamer.methodToProperty(meta.getImplMethodName());
+        if (StrUtil.isBlankOrUndefined(orderByStr)) {
+            this.orderBy = OrderTypeEnum.ASC;
+        } else {
+            this.orderBy = OrderTypeEnum.of(orderByStr);
+        }
+    }
+
+    public OrderBy(Integer index, String field, String orderByStr) {
+        this.index = index;
+        this.field = field;
+        if (StrUtil.isBlankOrUndefined(orderByStr)) {
+            this.orderBy = OrderTypeEnum.ASC;
+        } else {
+            this.orderBy = OrderTypeEnum.of(orderByStr);
+        }
+    }
+
 }

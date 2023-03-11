@@ -39,7 +39,7 @@ public class Result<T> {
         this.data = data;
     }
 
-    public Result<T> ok(T t){
+    public Result<T> ok(T t) {
         this.setCode(1000);
         this.setMsg("成功");
         this.setMessage("成功");
@@ -47,7 +47,7 @@ public class Result<T> {
         return this;
     }
 
-    public Result<T> fail(String msg){
+    public Result<T> fail(String msg) {
         this.setCode(1001);
         this.setMsg(msg);
         this.setMessage(msg);

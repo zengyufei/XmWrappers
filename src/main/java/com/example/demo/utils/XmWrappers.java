@@ -15,6 +15,7 @@ import com.example.demo.enums.OperateEnum;
 import com.example.demo.enums.OrderTypeEnum;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,7 @@ public final class XmWrappers {
             conditions.forEach(condition -> handleCondition(queryWrapper, tableInfo, condition));
         }
         if (CollUtil.isNotEmpty(orders)) {
+            orders.sort(Comparator.comparing(OrderBy::getIndex, Comparator.nullsLast(Integer::compareTo)));
             // 构造排序规则
             orders.forEach(order -> handleOrder(queryWrapper, tableInfo, order));
         }
@@ -353,7 +355,7 @@ public final class XmWrappers {
         public <T> InnerOrderBy add(SFunction<T, ?> fn, String orderTypeStr) {
             OrderTypeEnum orderTypeEnum = OrderTypeEnum.ASC;
             if (StrUtil.equalsIgnoreCase(OrderTypeEnum.DESC.name(), orderTypeStr)) {
-                orderTypeEnum =  OrderTypeEnum.DESC;
+                orderTypeEnum = OrderTypeEnum.DESC;
             }
             orderBys.add(new OrderBy(fn, orderTypeEnum));
             return this;
@@ -367,9 +369,37 @@ public final class XmWrappers {
         public <T> InnerOrderBy add(String fieldName, String orderTypeStr) {
             OrderTypeEnum orderTypeEnum = OrderTypeEnum.ASC;
             if (StrUtil.equalsIgnoreCase(OrderTypeEnum.DESC.name(), orderTypeStr)) {
-                orderTypeEnum =  OrderTypeEnum.DESC;
+                orderTypeEnum = OrderTypeEnum.DESC;
             }
             orderBys.add(new OrderBy(fieldName, orderTypeEnum));
+            return this;
+        }
+
+        public <T> InnerOrderBy add(Integer index, SFunction<T, ?> fn, OrderTypeEnum orderTypeEnum) {
+            orderBys.add(new OrderBy(index, fn, orderTypeEnum));
+            return this;
+        }
+
+        public <T> InnerOrderBy add(Integer index, SFunction<T, ?> fn, String orderTypeStr) {
+            OrderTypeEnum orderTypeEnum = OrderTypeEnum.ASC;
+            if (StrUtil.equalsIgnoreCase(OrderTypeEnum.DESC.name(), orderTypeStr)) {
+                orderTypeEnum = OrderTypeEnum.DESC;
+            }
+            orderBys.add(new OrderBy(index, fn, orderTypeEnum));
+            return this;
+        }
+
+        public <T> InnerOrderBy add(Integer index, String fieldName, OrderTypeEnum orderTypeEnum) {
+            orderBys.add(new OrderBy(index, fieldName, orderTypeEnum));
+            return this;
+        }
+
+        public <T> InnerOrderBy add(Integer index, String fieldName, String orderTypeStr) {
+            OrderTypeEnum orderTypeEnum = OrderTypeEnum.ASC;
+            if (StrUtil.equalsIgnoreCase(OrderTypeEnum.DESC.name(), orderTypeStr)) {
+                orderTypeEnum = OrderTypeEnum.DESC;
+            }
+            orderBys.add(new OrderBy(index, fieldName, orderTypeEnum));
             return this;
         }
 

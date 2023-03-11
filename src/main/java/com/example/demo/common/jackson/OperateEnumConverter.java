@@ -17,6 +17,7 @@ public class OperateEnumConverter implements Converter<String, OperateEnum> {
 
     /**
      * 输入值类型
+     *
      * @param typeFactory
      * @return
      */
@@ -27,6 +28,7 @@ public class OperateEnumConverter implements Converter<String, OperateEnum> {
 
     /**
      * 转换器输出值类型
+     *
      * @param typeFactory
      * @return
      */

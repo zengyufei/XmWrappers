@@ -13,7 +13,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TestConditionOrderBy extends NoSpringMp {
@@ -37,13 +36,13 @@ public class TestConditionOrderBy extends NoSpringMp {
                         .field("age", "gt", 1)
                         .field("age", "lt", 100)
                         .field("age", "in", 10, 20)
-                        .field("age", OperateEnum.IS_NOT_NULL)
+//                        .field("age", OperateEnum.IS_NOT_NULL)
                         .build();
 
                 final List<OrderBy> orders = XmWrappers.buildOrderBy()
-                        .add("age", "desc")
+                        .add(1, "age", "desc")
                         .add(Student::getName, "desc")
-                        .add(Student::getId, OrderTypeEnum.ASC)
+                        .add(1, Student::getId, OrderTypeEnum.ASC)
                         .build();
 
                 final QueryWrapper<Student> search = XmWrappers.search(Student.class, conditions, orders);
